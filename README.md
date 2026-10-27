@@ -93,8 +93,8 @@ prebuilt/ epyc7002-5.10.55+/ (готовые .ko + MD5SUMS)
 
 
 **Лицензия**
-Скрипты — MIT (LICENSE). Собранные модули — производная от ядра Linux и распространяются
-под GPL-2.0 (MODULE_LICENSE("GPL")), как и исходники Synology GPL.
+Скрипты — MIT. Собранные модули — производная от ядра Linux и распространяются
+под GPL-2.0, как и исходники Synology GPL.
 
 **Благодарности**
 * AuxXxilium — [syno-compiler](https://github.com/AuxXxilium/syno-compiler) и ARC Loader;
