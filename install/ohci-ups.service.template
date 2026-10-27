@@ -1,0 +1,17 @@
+[Unit]
+Description=Load OHCI HCD modules (USB 1.1 / full & low speed devices, e.g. UPS)
+Documentation=file://__BASE__/README.md
+DefaultDependencies=no
+After=syno-volume.target
+Before=ups-usb.service
+ConditionPathExists=!/sys/module/ohci_hcd
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStartPre=/bin/sh -c 'i=0; while [ ! -f __BASE__/ohci-hcd.ko ] && [ $$i -lt 120 ]; do i=$$((i+1)); sleep 1; done'
+ExecStart=/sbin/insmod __BASE__/ohci-hcd.ko
+ExecStart=/sbin/insmod __BASE__/ohci-pci.ko
+
+[Install]
+WantedBy=syno-volume.target

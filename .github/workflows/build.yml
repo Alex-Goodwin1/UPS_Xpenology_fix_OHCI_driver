@@ -1,0 +1,69 @@
+name: build-ohci-hcd
+
+# Ручная сборка модулей OHCI под нужную DSM/платформу.
+# Запуск: Actions -> build-ohci-hcd -> Run workflow
+# Готовые .ko появятся в артефактах запуска (и в релизе, если создать релиз вручную).
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Тег образа syno-compiler (= major.minor DSM)"
+        default: "7.4"
+        required: true
+      platform:
+        description: "Платформа Synology"
+        default: "epyc7002"
+        required: true
+      gpl_version:
+        description: "Версия сборки для GPL-исходников (например 7.4-90080)"
+        default: "7.4-90080"
+        required: true
+      kernel_series:
+        description: "Серия ядра (5.10 / 4.4)"
+        default: "5.10"
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Параметры
+        run: |
+          echo "image   : auxxxilium/syno-compiler:${{ inputs.image_tag }}"
+          echo "platform: ${{ inputs.platform }}"
+          echo "gpl     : ${{ inputs.gpl_version }}"
+          echo "kernel  : ${{ inputs.kernel_series }}"
+
+      - name: Скачать GPL-исходники ядра
+        run: |
+          chmod +x build/fetch-gpl-source.sh
+          PLATFORM="${{ inputs.platform }}" \
+          GPL_VER="${{ inputs.gpl_version }}" \
+          KSERIES="${{ inputs.kernel_series }}" \
+          sh build/fetch-gpl-source.sh
+
+      - name: Собрать модули
+        run: |
+          chmod +x build/build-ohci.sh
+          IMAGE="auxxxilium/syno-compiler:${{ inputs.image_tag }}" \
+          PLATFORM="${{ inputs.platform }}" \
+          KERNEL_TARBALL="linux-${{ inputs.kernel_series }}.x.txz" \
+          sh build/build-ohci.sh
+
+      - name: Показать результат
+        run: |
+          ls -l out/
+          for f in out/*.ko; do echo "== $f"; md5sum "$f"; done
+
+      - name: Загрузить артефакты
+        uses: actions/upload-artifact@v4
+        with:
+          name: ohci-${{ inputs.platform }}-kernel${{ inputs.kernel_series }}
+          path: |
+            out/*.ko
+            out/kernel.release
+            out/config.used

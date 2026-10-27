@@ -1,0 +1,14 @@
+# .gitattributes — чтобы скрипты и юниты попадали в репозиторий с LF и с правами +x
+* text=auto
+
+*.sh       text eol=lf
+*.template text eol=lf
+*.service  text eol=lf
+*.yml      text eol=lf
+*.yaml     text eol=lf
+*.md       text eol=lf
+
+# бинарники
+*.ko       binary
+*.txz      binary
+*.png      binary

@@ -1,0 +1,19 @@
+# результаты сборки
+/out/
+/src/
+/srcdir/
+*.txz
+*.txz.part
+
+# локальные артефакты
+*.log
+/ref/
+*.part
+
+# ОС / редакторы
+Thumbs.db
+desktop.ini
+.DS_Store
+*.swp
+.idea/
+.vscode/
