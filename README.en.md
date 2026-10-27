@@ -32,8 +32,10 @@ Everything is installed on the data volume (`/volume1`) plus one systemd unit.
 `/usr/lib/modules`, `depmod` and the boot stick are not touched.
 
 ```sh
-# 1. copy the repository to the NAS (any directory on /volume1)
-# 2. install (root is required in ssh: sudo -i):
+# 1. copy the repository to the NAS, e.g. to /volume1/ohci-hcd
+# 2. connect over ssh and switch to root (root rights are required for installation):
+sudo -i
+cd /volume1/ohci-hcd
 SRC=prebuilt/epyc7002-5.10.55+ sh install/install.sh
 ```
 

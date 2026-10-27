@@ -14,24 +14,29 @@ EHCI обслуживает только high-speed. Любое full/low-speed �
 
 Симптомы:
 
+```sh
 $ ls /sys/bus/pci/drivers | grep -i ohci
 (пусто)
 $ dmesg | grep -i 'low-speed'
 (пусто)
+```
 
 
 Модули привязаны к точному vermagic (5.10.55+ SMP mod_unload). Для другой платформы,
 другой версии DSM или другого ядра их нужно пересобрать (см. ниже).
 
-Установка (готовые модули)
+**Установка (готовые модули)**
 
 Всё ставится на диск данных (/volume1) + один systemd-юнит. /usr/lib/modules,
 depmod и загрузочная флешка не затрагиваются.
 
-ssh
-# 1. скопировать репозиторий на NAS, например в 
-# 2. установить (нужен root в ssh: sudo -i): 
+```sh
+# 1. скопировать репозиторий на NAS, например в /volume1/ohci-hcd
+# 2. подключиться по ssh и перейти под root (для установки нужны права root):
+sudo -i
+cd /volume1/ohci-hcd
 SRC=prebuilt/epyc7002-5.10.55+ sh install/install.sh
+```
 
 Скрипт
 * проверяет, что vermagic модулей совпадает с uname -r (иначе откажется ставить);
@@ -41,51 +46,57 @@ SRC=prebuilt/epyc7002-5.10.55+ sh install/install.sh
 * сразу делает insmod, чтобы ИБП заработал без перезагрузки.
 
 Проверка и удаление:
-sh
+```sh
 sh tools/status.sh                 # шины usb4..6, устройство, NUT, юнит
 /usr/bin/upsc ups                  # battery.charge, ups.status, input.voltage...
 
 sh install/uninstall.sh            # снять юнит и выгрузить модули
 PURGE=1 sh install/uninstall.sh    # + удалить каталог с .ko
+```
 
 
 
-Сборка из исходников
+**Сборка из исходников**
 Нужен любой хост с Docker (можно прямо на NAS: у Container Manager docker работает).
 
+```sh
 # 1. исходники ядра Synology (GPL) для своей сборки DSM
 GPL_VER=7.4-90080 PLATFORM=epyc7002 sh build/fetch-gpl-source.sh
 # 2. сборка в контейнере auxxxilium/syno-compiler:<DSM major.minor>
 IMAGE=auxxxilium/syno-compiler:7.4 PLATFORM=epyc7002 sh build/build-ohci.sh
+```
 Результат — в out/: ohci-hcd.ko, ohci-pci.ko + контрольные ehci-pci.ko, uhci-hcd.ko.
 
-Что делает сборка
+**Что делает сборка**
 1. Распаковывает linux-5.10.x из GPL-архива Synology.
-2. Берёт  .config платформы из тулкита (/opt/<platform>/build/.config).
+2. Берёт .config платформы из тулкита (/opt/<platform>/build/.config).
 3. Включает CONFIG_USB_OHCI_HCD=m и CONFIG_USB_OHCI_HCD_PCI=m; ставит
    CONFIG_LOCALVERSION="+" (без него vermagic получится 5.10.55, а нужно 5.10.55+).
 4. make modules_prepare + make M=drivers/usb/host modules.
 5. Кладёт ehci-pci.ko/uhci-hcd.ko в out/ — они нужны для проверки ABI (см. ниже).
 
-Особенности окружения (уже учтены в скриптах):
+**Особенности окружения** (уже учтены в скриптах):
 * WERROR=0 — иначе tools/lib/subcmd под host-gcc 12 падает на -Werror=use-after-free;
 * CONFIG_DEBUG_INFO_BTF выключается, т.к. tools/bpf/resolve_btfids требует python3,
   которого в образе нет (для модулей 5.10 BTF не генерируется, на ABI не влияет).
 
-## Структура репозитория
+**Структура репозитория**
+
+```
 build/    fetch-gpl-source.sh, build-ohci.sh, in-container-build.sh
 install/  install.sh, uninstall.sh, ohci-ups.service.template
 tools/    status.sh, load.sh (verify/load/unload/status)
 verify/   compare-abi.sh, compare-sym.sh
 prebuilt/ epyc7002-5.10.55+/ (готовые .ko + MD5SUMS)
 .github/  workflows/build.yml — сборка модулей в CI
+```
 
 
-Лицензия
+**Лицензия**
 Скрипты — MIT (LICENSE). Собранные модули — производная от ядра Linux и распространяются
 под GPL-2.0 (MODULE_LICENSE("GPL")), как и исходники Synology GPL.
 
-Благодарности
+**Благодарности**
 * AuxXxilium — [syno-compiler](https://github.com/AuxXxilium/syno-compiler) и ARC Loader;
 * Synology — GPL-исходники ядра linux-5.10.x;
 * сообщество Xpenology.
