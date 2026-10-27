@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 <укажите автора>
+Copyright (c) 2026 Alex-Goodwin1
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,13 +19,13 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
 ---
 
-ПРИМЕЧАНИЕ О МОДУЛЯХ ЯДРА
+KERNEL MODULES NOTICE
 
-Файлы *.ko в каталоге prebuilt/ и любые модули, полученные сборкой из этого
-репозитория, являются производными от ядра Linux и исходников Synology GPL
-(linux-5.10.x). Они распространяются на условиях GNU General Public License
-версии 2 (GPL-2.0), как и исходный код ядра (MODULE_LICENSE("GPL")).
-Текст GPL-2.0: https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
+The *.ko files in prebuilt/ and any modules produced by this project's build
+scripts are derivative works of the Linux kernel and of the Synology GPL
+sources (linux-5.10.x). They are distributed under the GNU General Public
+License version 2 (GPL-2.0), the same license as the kernel source
+(MODULE_LICENSE("GPL")). GPL-2.0 text:
+https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
