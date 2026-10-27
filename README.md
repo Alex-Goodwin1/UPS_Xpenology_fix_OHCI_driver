@@ -23,7 +23,7 @@ $ dmesg | grep -i 'low-speed'
 
 
 Модули привязаны к точному vermagic (5.10.55+ SMP mod_unload). Для другой платформы,
-другой версии DSM или другого ядра их нужно пересобрать (см. ниже).
+другой версии DSM или другого ядра их нужно пересобрать.
 
 **Установка (готовые модули)**
 
@@ -73,7 +73,7 @@ IMAGE=auxxxilium/syno-compiler:7.4 PLATFORM=epyc7002 sh build/build-ohci.sh
 3. Включает CONFIG_USB_OHCI_HCD=m и CONFIG_USB_OHCI_HCD_PCI=m; ставит
    CONFIG_LOCALVERSION="+" (без него vermagic получится 5.10.55, а нужно 5.10.55+).
 4. make modules_prepare + make M=drivers/usb/host modules.
-5. Кладёт ehci-pci.ko/uhci-hcd.ko в out/ — они нужны для проверки ABI (см. ниже).
+5. Кладёт ehci-pci.ko/uhci-hcd.ko в out/ — они нужны для проверки ABI.
 
 **Особенности окружения** (уже учтены в скриптах):
 * WERROR=0 — иначе tools/lib/subcmd под host-gcc 12 падает на -Werror=use-after-free;
